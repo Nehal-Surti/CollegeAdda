@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "754537388001",
+    "firebase_url": "https://collegeadda-54eae.firebaseio.com",
+    "project_id": "collegeadda-54eae",
+    "storage_bucket": "collegeadda-54eae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754537388001:android:f2b10090385f7bc3",
+        "android_client_info": {
+          "package_name": "com.example.android.collegeadda"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754537388001-b9gd3h3b6sq2am8r1fs0cnlngucr9kvc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.collegeadda",
+            "certificate_hash": "1723c213fa47b4814a3eb60e02c45e58699523ec"
+          }
+        },
+        {
+          "client_id": "754537388001-laaqj0ju2cv4u57dn96sms4i3c4mda3l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv20Rw7GvbDLA6zpDVy4a6By56D1fTbTQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754537388001-laaqj0ju2cv4u57dn96sms4i3c4mda3l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
