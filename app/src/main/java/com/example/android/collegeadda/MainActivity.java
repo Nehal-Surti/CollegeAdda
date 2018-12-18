@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     String user;
     String displayName;
     String dEmail;
-    int number;
+    String number;
     String Stat;
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mFirebaseAuth;
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         final EditText phone = (EditText)findViewById(R.id.contact);
         final EditText status = (EditText)findViewById(R.id.status);
         final Button create = (Button)findViewById(R.id.create);
-        intent = new Intent(MainActivity.this,DetailsActivity.class);
+        intent = new Intent(MainActivity.this,NavigationDrawer.class);
         mFirebaseAuth = FirebaseAuth.getInstance();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         final List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 }else
                 {
                    create.setEnabled(false);
-                   number = Integer.parseInt(phone.getText().toString());
+                   number = phone.getText().toString();
                    dEmail=email.getText().toString();
                    Stat = status.getText().toString();
                    createUser(displayName,dEmail,number,Stat);
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
     }
 
-    void createUser(String Name, String Email, int Phone, String Status)
+    void createUser(String Name, String Email, String Phone, String Status)
     {
         user=FirebaseAuth.getInstance().getCurrentUser().getUid();
         String path = "users/"+user+"/";
