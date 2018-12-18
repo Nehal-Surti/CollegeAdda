@@ -24,19 +24,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN=1;
-    EditText name = (EditText)findViewById(R.id.displayName);
-    EditText email = (EditText)findViewById(R.id.email);
-    EditText phone = (EditText)findViewById(R.id.contact);
-    EditText status = (EditText)findViewById(R.id.status);
-    Button create = (Button)findViewById(R.id.create);
     Intent intent;
     String user;
-    String path;
     String displayName;
     String dEmail;
     int number;
@@ -49,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details);
+        final EditText name = (EditText)findViewById(R.id.displayName);
+        final EditText email = (EditText)findViewById(R.id.email);
+        final EditText phone = (EditText)findViewById(R.id.contact);
+        final EditText status = (EditText)findViewById(R.id.status);
+        final Button create = (Button)findViewById(R.id.create);
         intent = new Intent(MainActivity.this,DetailsActivity.class);
         mFirebaseAuth = FirebaseAuth.getInstance();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -141,33 +141,20 @@ public class MainActivity extends AppCompatActivity {
     void createUser(String Name, String Email, int Phone, String Status)
     {
         user=FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("users").setValue(user);
-        ref.child("users").child("name").setValue(Name);
-        ref.child("users").child("email").setValue(Email);
-        ref.child("users").child("phoneNo").setValue(Phone);
-        ref.child("users").child("status").setValue(Status).addOnSuccessListener(new OnSuccessListener<Void>() {
+        String path = "users/"+user+"/";
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(path);
+
+        HashMap<String,Object> values = new HashMap<>();
+        values.put("name",Name);
+        values.put("email",Email);
+        values.put("phoneNo",Phone);
+        values.put("status",Status);
+
+        ref.setValue(values).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                mFirebaseDatabase = FirebaseDatabase.getInstance();
-                mDatabaseReference = mFirebaseDatabase.getReference("users/");
-                mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        ref.child("users").setValue(dataSnapshot.getValue()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                startActivity(intent);
+                finish();
             }
         });
     }
