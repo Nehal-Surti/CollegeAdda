@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.android.collegeadda.Fragments.Chat;
 import com.example.android.collegeadda.Fragments.Friends;
+import com.firebase.ui.auth.AuthUI;
 
 public class NavigationDrawer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,11 +75,14 @@ public class NavigationDrawer extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.sign_out_menu) {
+            AuthUI.getInstance().signOut(this);
             Toast.makeText(this, "Khud likh code im not writing", Toast.LENGTH_SHORT).show();
             return true;
         }
-
-        return super.onOptionsItemSelected(item);
+        else
+        {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

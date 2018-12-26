@@ -2,7 +2,10 @@ package com.example.android.collegeadda.Fragments;
 
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,7 +41,7 @@ public class Friends extends Fragment {
     ListView listView;
     ArrayAdapter<String> arrayAdapter;
     ArrayList<String> arrayList = new ArrayList<>();
-
+    Intent intent;
     public Friends() {
         // Required empty public constructor
     }
@@ -62,6 +65,7 @@ public class Friends extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final Fragment fragment = new Chat();
         listView = (ListView)rootview.findViewById(R.id.friendsListView);
         arrayAdapter = new ArrayAdapter<>(myContext,R.layout.just_text);
         listView.setAdapter(arrayAdapter);
@@ -71,8 +75,11 @@ public class Friends extends Fragment {
 
                 String uid = arrayList.get(position);
                 Toast.makeText(myContext, uid, Toast.LENGTH_SHORT).show();
-//id of selected user
-
+                android.support.v4.app.FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment,fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
 
             }
         });
@@ -100,8 +107,6 @@ public class Friends extends Fragment {
                 }
 //                Toast.makeText(myContext, "Data Received", Toast.LENGTH_SHORT).show();
 
-
-
             }
 
             @Override
@@ -110,10 +115,6 @@ public class Friends extends Fragment {
             }
         });
 
-
-
-
     }
-
 
 }
