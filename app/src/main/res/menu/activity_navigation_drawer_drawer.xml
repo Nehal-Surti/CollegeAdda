@@ -7,5 +7,9 @@
        android:title="Chat"
        android:icon="@drawable/ic_menu_send"
        android:id="@+id/navChat"/>
+   <item
+       android:title="Friends"
+       android:icon="@drawable/ic_menu_send"
+       android:id="@+id/navFriends"/>
 
 </menu>

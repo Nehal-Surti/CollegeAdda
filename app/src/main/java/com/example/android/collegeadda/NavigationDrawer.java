@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.android.collegeadda.Fragments.Chat;
+import com.example.android.collegeadda.Fragments.Friends;
 
 public class NavigationDrawer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -93,7 +94,10 @@ public class NavigationDrawer extends AppCompatActivity
                     chatFrag = new Chat();
                 }
                 swapFrag(chatFrag);
-
+                break;
+            case R.id.navFriends:
+                swapFrag(new Friends());
+                break;
 
 
         }

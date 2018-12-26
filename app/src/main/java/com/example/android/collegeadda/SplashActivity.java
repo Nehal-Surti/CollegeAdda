@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class SplashActivity extends AppCompatActivity {
 
     protected void onCreate(@Nullable Bundle savedInstanceState){
@@ -30,7 +32,9 @@ public class SplashActivity extends AppCompatActivity {
         //https://firebase.google.com/docs/auth/android/manage-users
         // check this for it
         // actually u already know to check if user is signed in firebase auth so just apply that
-
+        if(FirebaseAuth.getInstance().getCurrentUser() !=null){
+            return true;
+        }
 
         return false;
     }
