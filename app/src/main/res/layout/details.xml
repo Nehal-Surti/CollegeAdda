@@ -5,11 +5,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
     <ImageButton
+        android:id="@+id/imageView"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="130dp"
         android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:src="@drawable/icon"/>
+        android:layout_height="70dp"/>
+
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
