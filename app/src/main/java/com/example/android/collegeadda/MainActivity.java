@@ -1,5 +1,6 @@
 package com.example.android.collegeadda;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,14 +8,20 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -22,6 +29,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,10 +46,13 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.Inflater;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int RC_SIGN_IN=1,REQUEST_IMAGE_GET=1;
+    public static final int RC_SIGN_IN=1,REQUEST_IMAGE_GET=2;
     Intent intent;
     String user;
     String displayName;
@@ -52,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private DatabaseReference mDatabaseReference;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    LinearLayout navigationView;
+    TextView nameView ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +127,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
     }
+
 
     void selectImage(){
         Intent intent = new Intent();
@@ -132,8 +147,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
-       // ImageButton img = (ImageButton) findViewById(R.id.imageView);
-        //Drawable icon;
+        ImageButton img = (ImageButton) findViewById(R.id.imageView);
+
+        Drawable icon;
         if (requestCode == RC_SIGN_IN){
             if (resultCode == RESULT_OK){
                 Toast.makeText(this,"You're Signed In", Toast.LENGTH_SHORT).show();
@@ -146,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         {
             Uri fullphotouri = data.getData();
             uploadPic(fullphotouri);
-            /*try{
+            try{
                 InputStream inputStream = this.getContentResolver().openInputStream(fullphotouri);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 Bitmap preview = BitmapFactory.decodeStream(inputStream,null,options);
@@ -155,14 +171,19 @@ public class MainActivity extends AppCompatActivity {
             {
                  icon = getResources().getDrawable(R.color.colorPrimary);
             }
-            img.setBackground(icon);*/
+            img.setBackground(icon);
+          /*LinearLayout navheader = (LinearLayout)findViewById(R.id.navheader);
+            ImageView view = (ImageView)navheader.findViewById(R.id.image);
+            view.setImageDrawable(icon);*/
+
 
         }
     }
 
     public void uploadPic(Uri uri)
     {
-        String path = "users/"+"profilePic/";
+        final String user = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String path = "users/"+"profilePic/"+ user;
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReference(path);
         UploadTask uploadTask = storageReference.putFile(uri);
@@ -174,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                 Toast.makeText(MainActivity.this,"Upload Success", Toast.LENGTH_SHORT).show();
             }
         });
@@ -200,18 +222,23 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
     }
 
-    void createUser(String Name, String Email, String Phone, String Status)
+   public void createUser(String Name, String Email, String Phone, String Status)
     {
         user=FirebaseAuth.getInstance().getCurrentUser().getUid();
         String path = "users/"+user+"/";
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(path);
+
+        String way = "users/"+"profilePic/"+ user;
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReference(way);
+        Task picture = storageReference.getDownloadUrl();
 
         HashMap<String,Object> values = new HashMap<>();
         values.put("name",Name);
         values.put("email",Email);
         values.put("phoneNo",Phone);
         values.put("status",Status);
-
+        values.put("profilePic",picture);
         ref.setValue(values).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
