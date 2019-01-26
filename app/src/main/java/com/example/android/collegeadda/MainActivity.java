@@ -27,6 +27,8 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -65,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     LinearLayout navigationView;
     TextView nameView ;
+    String url;
+    Button create;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         final EditText email = (EditText)findViewById(R.id.email);
         final EditText phone = (EditText)findViewById(R.id.contact);
         final EditText status = (EditText)findViewById(R.id.status);
-        final Button create = (Button)findViewById(R.id.create);
+        create = (Button)findViewById(R.id.create);
         final ImageButton imageButton = (ImageButton)findViewById(R.id.imageView);
         intent = new Intent(MainActivity.this,NavigationDrawer.class);
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -185,8 +189,11 @@ public class MainActivity extends AppCompatActivity {
         final String user = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String path = "users/"+"profilePic/"+ user;
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference(path);
+        final StorageReference storageReference = storage.getReference(path);
         UploadTask uploadTask = storageReference.putFile(uri);
+        create.setEnabled(false);
+        create.setText("Uploading Pic ...");
+
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -197,6 +204,25 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                 Toast.makeText(MainActivity.this,"Upload Success", Toast.LENGTH_SHORT).show();
+            }
+        });
+        Task<Uri> task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if(task.isSuccessful()){
+                    return storageReference.getDownloadUrl();
+                }else{
+                    throw task.getException();
+                }
+
+            }
+        });
+        task.addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                url = task.getResult().toString();
+                create.setEnabled(true);
+                create.setText("Create");
             }
         });
     }
@@ -228,22 +254,32 @@ public class MainActivity extends AppCompatActivity {
         String path = "users/"+user+"/";
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(path);
 
-        String way = "users/"+"profilePic/"+ user;
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference(way);
-        Task picture = storageReference.getDownloadUrl();
+//        String way = "users/"+"profilePic/"+ user;
+//        FirebaseStorage storage = FirebaseStorage.getInstance();
+//        StorageReference storageReference = storage.getReference(way);
+//        Task picture = storageReference.getDownloadUrl();
+
 
         HashMap<String,Object> values = new HashMap<>();
         values.put("name",Name);
         values.put("email",Email);
         values.put("phoneNo",Phone);
         values.put("status",Status);
-        values.put("profilePic",picture);
+
+        if(url!=null){
+            values.put("profilePic",url);
+        }
+
         ref.setValue(values).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 startActivity(intent);
                 finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
